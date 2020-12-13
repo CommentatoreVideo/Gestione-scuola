@@ -1,0 +1,130 @@
+{%extends "base.html"%}
+{% block titolo %}Modifica voto{% endblock %}
+{%load static%}
+{% block contenuto %}
+  {%include 'navbarSopra.html'%}
+  {%include 'navbarSinistra.html'%}
+  <div id="layoutSidenav_content">
+    <main>
+      <div class="container-fluid">
+        <h1 class="mt-4">Voti</h1>
+        <div class="card card-scuro mb-4">
+          <div class="card-header">
+            <i class="fas fa-table mr-1"></i>
+            Elenco voti
+          </div>
+          {% csrf_token %}
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                  <tr>
+                    <th>Materia</th>
+                    <th>Voto</th>
+                    <th>Tipo</th>
+                    <th>Media</th>
+                    <th>Giorno</th>
+                    <th>Modifica</th>
+                  </tr>
+                </thead>
+                <tfoot>
+                  <tr>
+                    <th>Materia</th>
+                    <th>Voto</th>
+                    <th>Tipo</th>
+                    <th>Media</th>
+                    <th>Giorno</th>
+                    <th>Modifica</th>
+                  </tr>
+                </tfoot>
+                <tbody>
+                  {% for materia in righe %}
+                    {% for voto in materia.1 %}
+                  <tr>
+                    <td>
+                      <select id="slcMateria{{voto.4}}">
+                        {% for ciao in materie %}
+                        {% if ciao == materia.0 %}
+                        <option value="{{ciao}}" selected>{{ciao}}</option>
+                        {% else %}
+                        <option value="{{ciao}}">{{ciao}}</option>
+                        {% endif %}
+                        {% endfor %}
+                      </select></td>
+                    <td>
+                      <input type="text" id="txtVoto{{voto.4}}" placeholder="Voto({{voto.0}})" value="{{voto.0}}">
+                    </td>
+                    <td>
+                    <select id="slcTipo{{voto.4}}">
+                    {% if voto.1 == "Orale" %}
+                    <option value="Orale" selected>Orale</option>
+                    <option value="Scritto">Scritto</option>
+                    <option value="Pratica">Pratica</option>
+                    {% elif voto.1 == "Scritto" %}
+                    <option value="Orale">Orale</option>
+                    <option value="Scritto" selected>Scritto</option>
+                    <option value="Pratica">Pratica</option>
+                    {% elif voto.1 == "Pratica" %}
+                    <option value="Orale">Orale</option>
+                    <option value="Scritto">Scritto</option>
+                    <option value="Pratica" selected>Pratica</option>
+                    {% endif %}
+                    </select>
+                    </td>
+                    <td>
+                    <select id="slcMedia{{voto.4}}">
+                    {% if voto.2 == "Si" %}
+                    <option value="Si" selected>Si</option>
+                    <option value="No">No</option>
+                    {% else %}
+                    <option value="Si">Si</option>
+                    <option value="No" selected>No</option>
+                    {% endif %}
+                    </select></td>
+                    <td>
+                      <input type="text" id="txtData{{voto.4}}" placeholder="Giorno({{voto.3}})" value="{{voto.3}}">
+                    </td>
+                    <td>
+                      <button class="btn btn-success" onclick="modifica({{voto.4}})">Modifica</button>
+                    </td>
+                  </tr>
+                    {% endfor %}
+                {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  </div>
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js" crossorigin="anonymous"></script>
+  <script>
+    function modifica(indice) {
+      const materia=$(`#slcMateria${indice}`).val();
+      const voto=$(`#txtVoto${indice}`).val().replace(/,/,".");
+      const tipo=$(`#slcTipo${indice}`).val();
+      const media=$(`#slcMedia${indice}`).val()=="Si"?1:0;
+      const data=$(`#txtData${indice}`).val();
+      let url="/databaseModificaVoto/";
+        $.ajax({
+          type: 'POST',
+          url: url,
+          data: {
+            materia,
+            voto,
+            tipo,
+            media,
+            data,
+            indice,
+            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+            action: 'post'
+          },
+          success: ()=>window.open("/","_self"),
+          //success:()=>location.reload(),
+          error: ()=>{}
+        });
+    }
+  </script>
+{%endblock contenuto%}

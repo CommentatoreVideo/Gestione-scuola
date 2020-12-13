@@ -1,0 +1,69 @@
+{%extends "base.html"%}
+{% block titolo %}Gestione scuola{% endblock %}
+{%load static%}
+{% block contenuto %}
+  {%include 'navbarSopra.html'%}
+  {%include 'navbarSinistra.html'%}
+  {% csrf_token %}
+  <div id="layoutSidenav_content">
+    <main>
+      <div class="container-fluid">
+        <h1 class="mt-4">{{request.user}}</h1>
+        <div class="row">
+          {%include 'carta.html' with classe='bg-success' titolo='Aggiungi voto' dettagli='Inserisci un nuovo voto' link='aggiungiVoto'%}
+          {%include 'carta.html' with classe='bg-warning' titolo='Modifica voto' dettagli='Modifica un voto' link='modificaVoto/'%}
+          {%include 'carta.html' with classe='bg-danger' titolo='Rimuovi voto' dettagli='Elimina un voto' link='rimuoviVoto/'%}
+        </div>
+        <div class="row">
+          <div class="col-xl-6">
+            <div class="card card-scuro mb-4" id="perGraficoLinee">
+              <div class="card-header">
+                <i class="fas fa-chart-area mr-1"></i>
+                <span id="spanNomeMateriaGraficoLinee"></span>
+                <button onclick="modificaIndice(false)" class="btn text-white border">
+                  <i class="fas fa-arrow-left mr-1"></i>
+                </button>
+                <button onclick="modificaIndice(true)" class="btn text-white border">
+                  <i class="fas fa-arrow-right mr-1"></i>
+                </button>
+              </div>
+              <div class="card-body"><canvas id="graficoLinee" width="100%" height="40"></canvas></div>
+            </div>
+          </div>
+          <div class="col-xl-6">
+            <div class="card card-scuro mb-4" id="perGraficoBar">
+              <div class="card-header">
+                <i class="fas fa-chart-bar mr-1"></i>
+                Media materie
+              </div>
+              <div class="card-body"><canvas id="graficoBar" width="100%" height="40"></canvas></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  </div>
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js" crossorigin="anonymous"></script>
+  <script>
+    const nomi = {{nomiMaterieMedie|safe}};
+    const medie = {{votiMaterieMedie|safe}};
+    const colori = {{coloriMaterieMedie|safe}};
+    const voti = {{votiMaterie|safe}};
+    let indice = 0;
+    function modificaIndice(aumenta) {
+      //Aumento o diminuisco l'indice
+      indice += aumenta ? 1 : -1;
+      //Controllo che sia nei limiti del vettore
+      if(indice >= nomi.length)
+        indice = 0;
+      else if(indice < 0)
+        indice = nomi.length - 1;
+      //Cambio il nome della materia
+      $("#spanNomeMateriaGraficoLinee").text(`Grafico ${nomi[indice]}`);
+      resetCanvasLinee();
+      generaGraficoLinee();
+    }
+    $("#spanNomeMateriaGraficoLinee").text(`Grafico ${nomi[indice]}`);
+  </script>
+{%endblock contenuto%}
