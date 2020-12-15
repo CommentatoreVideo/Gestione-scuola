@@ -22,7 +22,7 @@
 })(jQuery);
 
 function cambiaQuadrimestre(q) {
-    const url = "/cambiaQuadrimestre/";
+    const url = "/database/cambiaQuadrimestre/";
     $.ajax({
         type: 'POST',
         url: url,

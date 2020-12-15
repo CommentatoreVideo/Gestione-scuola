@@ -1,0 +1,100 @@
+{%extends "base.html"%}
+{% block titolo %}Compiti da fare{% endblock %}
+{%load static%}
+{%load prossimo%}
+{% block contenuto %}
+  {%include 'navbarSopra.html'%}
+  {%include 'navbarSinistra.html'%}
+  <div id="layoutSidenav_content">
+    <main>
+    {% csrf_token %}
+      <div class="container-fluid">
+        <h1 class="mt-4">Compiti da fare</h1>
+        <button type="button" class="btn btn-success" id="btnModifica">Modifica tutto</button>
+        <div class="card card-scuro mb-4">
+          <div class="card-header">
+            <i class="fas fa-table mr-1"></i>
+            Elenco compiti
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                  <tr>
+                    <th>Materia</th>
+                    <th>Data di scadenza</th>
+                    <th>Compito</th>
+                  </tr>
+                </thead>
+                <tfoot>
+                  <tr>
+                    <th>Materia</th>
+                    <th>Data di scadenza</th>
+                    <th>Compito</th>
+                  </tr>
+                </tfoot>
+                <tbody>
+                {% for compito in righe %}
+                  <tr>
+                    <td>{{compito.0}}</td>
+                    <td>{{compito.1}}</td>
+                    <td>
+                      <div class="compito" id="div{{compito.3}}">
+                      {% for voce in compito.2 %}
+                      {% ifequal forloop.counter0|divisibleby:"2" True%}
+                          <div class="form-check">
+                            {% if compito.2|prossimo:forloop.counter0 == "1"%}
+                            <input class="form-check-input" type="checkbox" id="chk{{forloop.counter}}" checked>
+                            {%else%}
+                            <input class="form-check-input" type="checkbox" id="chk{{forloop.counter}}">
+                            {%endif%}
+                            <label class="form-check-label" for="chk{{forloop.counter}}">
+                              {{voce}}
+                            </label>
+                          </div>
+                        {% endifequal %}
+                      {% endfor %}
+                      </div>
+                    </td>
+                  </tr>
+                {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  </div>
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js" crossorigin="anonymous"></script>
+  <script>
+    $("#btnModifica").click(e=>{
+        let url="/database/compitiDaFare/";
+        let stringaGenerale="";
+        $(".compito").each((i,e)=>{
+          let id=$(e).attr("id").substring(3);
+          let stringa=id+"/";
+          let input=$(e).children().children().filter("input");
+          for(let i=0; i<input.length; i++)
+            stringa+=($(input[i]).is(":checked")?1:0)+",";
+          stringa=stringa.substring(0,stringa.length-1);
+          stringa+="*";
+          stringaGenerale+=stringa;
+        });
+        stringaGenerale=stringaGenerale.substring(0,stringaGenerale.length-1);
+        $.ajax({
+          type: 'POST',
+          url: url,
+          data: {
+            stringa:stringaGenerale,
+            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+            action: 'post'
+          },
+          success: ()=>window.open("/","_self"),
+          //success:()=>location.reload(),
+          error: ()=>{}
+        });
+      });
+  </script>
+  {%endblock contenuto%}

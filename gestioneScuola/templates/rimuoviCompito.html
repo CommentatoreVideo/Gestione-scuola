@@ -20,37 +20,37 @@
                 <thead>
                   <tr>
                     <th>Materia</th>
-                    <th>Voto</th>
-                    <th>Tipo</th>
-                    <th>Media</th>
-                    <th>Giorno</th>
+                    <th>Data di scadenza</th>
+                    <th>Compito</th>
                     <th>Elimina</th>
                   </tr>
                 </thead>
                 <tfoot>
                   <tr>
                     <th>Materia</th>
-                    <th>Voto</th>
-                    <th>Tipo</th>
-                    <th>Media</th>
-                    <th>Giorno</th>
+                    <th>Data di scadenza</th>
+                    <th>Compito</th>
                     <th>Elimina</th>
                   </tr>
                 </tfoot>
                 <tbody>
-                {% for materia in righe %}
-                    {% for voto in materia.1 %}
+                  {% for compito in righe %}
                   <tr>
-                    <td>{{materia.0}}</td>
-                    <td>{{voto.0}}</td>
-                    <td>{{voto.1}}</td>
-                    <td>{{voto.2}}</td>
-                    <td>{{voto.3}}</td>
+                    <td>{{compito.0}}</td>
+                    <td>{{compito.1}}</td>
                     <td>
-                      <button class="btn btn-danger" onclick="elimina({{voto.4}})">Elimina</button>
+                        <ul>
+                      {% for voce in compito.2 %}
+                      {% ifequal forloop.counter0|divisibleby:"2" True%}
+                          <li>{{voce}}</li>
+                      {% endifequal %}
+                      {% endfor %}
+                      </ul>
+                    </td>
+                    <td>
+                      <button class="btn btn-danger" onclick="elimina({{compito.3}})">Elimina</button>
                     </td>
                   </tr>
-                    {% endfor %}
                 {% endfor %}
                 </tbody>
               </table>
@@ -64,9 +64,9 @@
   <script src="https://code.jquery.com/jquery-3.5.1.min.js" crossorigin="anonymous"></script>
   <script>
     function elimina(id) {
-      const sicuro=window.confirm("Sei sicuro di eliminare il voto?");
+      const sicuro=window.confirm("Sei sicuro di eliminare il compito?");
       if(sicuro){
-        let url="/database/rimuoviVoto/";
+        let url="/database/rimuoviCompito/";
         $.ajax({
           type: 'POST',
           url: url,
