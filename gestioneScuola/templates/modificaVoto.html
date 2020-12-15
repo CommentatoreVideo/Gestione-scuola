@@ -107,7 +107,7 @@
       const tipo=$(`#slcTipo${indice}`).val();
       const media=$(`#slcMedia${indice}`).val()=="Si"?1:0;
       const data=$(`#txtData${indice}`).val();
-      let url="/databaseModificaVoto/";
+      let url="/database/modificaVoto/";
         $.ajax({
           type: 'POST',
           url: url,

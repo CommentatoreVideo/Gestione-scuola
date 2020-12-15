@@ -1,7 +1,8 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from datetime import date, datetime
-from .models import Materia, Voto, Quadrimestre
+from django.http import HttpResponseNotFound
+from .models import Materia, Voto, Quadrimestre,Compito
 
 @login_required(login_url='login/')
 def index(request):
@@ -45,30 +46,6 @@ def aggiungiVoto(request):
   context={"elencoMaterie":elencoMaterie,"data":data,"quad":quad}
   return render(request,"aggiungiVoto.html",context)
 
-@login_required(login_url='login/') 
-def databaseAggiungiVoto(request):
-  quad=Quadrimestre.objects.get(id=1).quadrimestre
-  materia=request.POST.get("materia")
-  tipo=request.POST.get("tipologia")
-  voto=float(request.POST.get("voto"))
-  media=request.POST.get("media")
-  if(media=="Si"):
-    media=1
-  else:
-    media=0
-  data=request.POST.get("data")
-  v=Voto(tipo=tipo,voto=voto,media=media,giorno=data)
-  v.save()
-  indice=v.id
-  materiaO=Materia.objects.get(nome=materia)
-  if(quad==1):
-    materiaO.voti1=materiaO.voti1+str(indice)+","
-  else:
-    materiaO.voti2=materiaO.voti2+str(indice)+","
-  materiaO.save()
-  
-  Materia.objects.get(nome=materia).save()
-  return render(request,"index.html")
   
 @login_required(login_url='/login/')
 def rimuoviVoto(request):
@@ -95,19 +72,6 @@ def rimuoviVoto(request):
       riga.append(voti)
       righe.append(riga)
   return render(request,"rimuoviVoto.html",{"righe":righe,"quad":quad})
-
-@login_required(login_url='login/')  
-def databaseRimuoviVoto(request):
-  quad=Quadrimestre.objects.get(id=1).quadrimestre
-  indice=request.POST.get("id")
-  try:
-    Voto.objects.get(id=indice).delete()
-    materie=Materia.objects.all()
-    for materia in materie:
-      materia.rimuoviVoto(indice,quad)
-  except:
-    pass
-  return render(request,"rimuoviVoto.html")
   
 @login_required(login_url='/login/')
 def modificaVoto(request):
@@ -138,25 +102,51 @@ def modificaVoto(request):
   return render(request,"modificaVoto.html",{"righe":righe,"materie":elencoMaterie,"quad":quad})
   
 @login_required(login_url='/login/')
-def databaseModificaVoto(request):
-  materia=request.POST.get("materia")
-  votoV=request.POST.get("voto")
-  tipo=request.POST.get("tipo")
-  media=request.POST.get("media")
-  data=request.POST.get("data")
-  indice=request.POST.get("indice")
-  voto=Voto.objects.get(id=indice)
-  voto.voto=votoV
-  voto.tipo=tipo
-  voto.media=media
-  voto.giorno=data
-  voto.save()
-  return render(request,"modificaVoto.html")
-  
-@login_required(login_url='/login/')
 def cambiaQuadrimestre(request):
   quadrimestre=request.POST.get("q")
   q=Quadrimestre.objects.get(id=1)
   q.quadrimestre=quadrimestre
   q.save()
   return render(request,"index.html")
+  
+@login_required(login_url='/login/')
+def aggiungiCompito(request):
+  data=date.today().strftime("%d/%m/%Y")
+  quad=Quadrimestre.objects.get(id=1).quadrimestre
+  materie=Materia.objects.all()
+  elencoMaterie=[]
+  for i in range(len(materie)):
+    elencoMaterie.append(materie[i].nome)
+  context={"elencoMaterie":elencoMaterie,"data":data,"quad":quad}
+  return render(request,"aggiungiCompito.html",context)
+
+@login_required(login_url='/login/')
+def compitiDaFare(request):
+  righe=[]
+  elencoMaterie=[]
+  quad=Quadrimestre.objects.get(id=1).quadrimestre
+  compiti=Compito.objects.all()
+  for compito in compiti:
+    riga=[]
+    riga.append(compito.materia)
+    riga.append(compito.scadenza)
+    riga.append(compito.elenco.split("*"))
+    riga.append(compito.id)
+    righe.append(riga)
+  return render(request,"compitiDaFare.html",{"righe":righe,"quad":quad})
+
+
+def rimuoviCompito(request):
+  righe=[]
+  quad=Quadrimestre.objects.get(id=1).quadrimestre
+  compiti=Compito.objects.all()
+  for compito in compiti:
+    riga=[]
+    riga.append(compito.materia)
+    riga.append(compito.scadenza)
+    riga.append(compito.elenco.split("*"))
+    riga.append(compito.id)
+    righe.append(riga)
+  print(righe)
+  
+  return render(request,"rimuoviCompito.html",{"righe":righe})

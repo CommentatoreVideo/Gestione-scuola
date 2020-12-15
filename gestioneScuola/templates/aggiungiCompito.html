@@ -1,5 +1,5 @@
 {%extends "base.html"%}
-{% block titolo %}Aggiungi voto{% endblock %}
+{% block titolo %}Aggiungi compiti{% endblock %}
 {%load static%}
 {% block contenuto %}
   {%include 'navbarSopra.html'%}
@@ -11,7 +11,7 @@
           <div class="col-lg-7">
             <div class="card card-scuro shadow-lg border-0 rounded-lg mt-5">
               <div class="card-header">
-                <h3 class="text-center font-weight-light my-4">Aggiungi voto</h3>
+                <h3 class="text-center font-weight-light my-4">Aggiungi compito</h3>
               </div>
               <div class="card-body">
                 <form>
@@ -29,38 +29,17 @@
                     </div>
                     <div class="col-md-6">
                       <div class="form-group">
-                        <label class="small mb-1" for="slcTipologia">Tipologia</label>
-                        <select class="py-4" id="slcTipologia">
-                          <option>Scritto</option>
-                          <option>Orale</option>
-                          <option>Pratica</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label class="small mb-1" for="txtVoto">Voto</label>
-                    <input class="form-control py-4" id="txtVoto" type="text" placeholder="Inserisci il voto" />
-                  </div>
-                  <div class="form-row">
-                    <div class="col-md-6">
-                      <div class="form-group">
-                        <label class="small mb-1" for="slcMedia">Fa media?</label>
-                        <select class="py-4" id="slcMedia">
-                          <option>Si</option>
-                          <option>No</option>
-                        </select>                     
-                      </div>
-                    </div>
-                    <div class="col-md-6">
-                      <div class="form-group">
                         <label class="small mb-1" for="txtData">Data</label>
                         <input class="form-control py-4" id="txtData" type="text" placeholder="Data" value="{{data}}"/>
                       </div>
                     </div>
                   </div>
+                  <div class="form-group">
+                    <label for="txtCompito">Inserisci il compito</label>
+                    <textarea class="form-control" id="txtCompito" rows="20"></textarea>
+                  </div>
                   <div class="form-group mt-4 mb-0">
-                    <button class="btn btn-primary btn-block" type="button" id="btnAggiungiVoto">Aggiungi voto</button>
+                    <button class="btn btn-primary btn-block" type="button" id="btnAggiungiCompito">Aggiungi compito</button>
                   </div>
                 </form>
               </div>
@@ -72,24 +51,20 @@
   </div>
   <script src="https://code.jquery.com/jquery-3.5.1.min.js" crossorigin="anonymous"></script>
   <script>
-    $("#btnAggiungiVoto").click(function() {
+    $("#btnAggiungiCompito").click(function() {
       const materia=$("#slcMateria").val();
-      const tipologia=$("#slcTipologia").val();
-      const voto=$("#txtVoto").val();
-      const media=$("#slcMedia").val();
       const data=$("#txtData").val();
-      if(voto==""||data=="")
+      const compito=$("#txtCompito").val().replace(/\n/g,"*0*")+"*0";
+      if(compito==""||data=="")
         alert("Devi compilare tutti i campi")
       else {
-        let url="/database/aggiungiVoto/";
+        let url="/database/aggiungiCompito/";
         $.ajax({
           type: 'POST',
           url: url,
           data: {
             materia,
-            tipologia,
-            voto,
-            media,
+            compito,
             data,
             csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
             action: 'post'
