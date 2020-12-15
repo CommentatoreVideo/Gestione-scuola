@@ -26,7 +26,7 @@ SECRET_KEY = 'kl=_2a5cp5x#+uofbg0e3gsw=+u6n3o9r-b$wg2q1zduh&kdb5'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["127.0.0.1","127.0.0.1:8000"]
+ALLOWED_HOSTS = ['commentatore.pythonanywhere.com/','commentatore.pythonanywhere.com']
 
 
 # Application definition
@@ -128,7 +128,7 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'staticfiles'),
 )
 
-STATIC_ROOT = os.path.join(BASE_DIR, '../staticfiles')  #online
+STATIC_ROOT = '/home/Commentatore/Gestione-scuola/staticfiles'
 
 LOGIN_REDIRECT_URL='/'
-LOGIN_URL = '/login/' 
+LOGIN_URL = '/login/'
